@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  HttpCode,
   Post,
   Get,
   Put,
@@ -12,6 +11,8 @@ import {
   ParseFilePipe,
   FileTypeValidator,
   Query,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -21,7 +22,6 @@ import { User } from 'src/models/user.model';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @HttpCode(204)
   @UseInterceptors(FileInterceptor('avatar'))
   @Post()
   async createUser(
@@ -33,10 +33,19 @@ export class UserController {
     avatar: Express.Multer.File,
     @Body() body: User,
   ) {
-    const { username, email, password } = body;
-    const avatarUrl = await this.userService.storeImage(username, avatar);
+    try {
+      const { username, email, password } = body;
+      const avatarUrl = await this.userService.storeImage(username, avatar);
 
-    return this.userService.createUser(username, email, password, avatarUrl);
+      await this.userService.createUser(username, email, password, avatarUrl);
+
+      return `User with username ${username} successfully created`;
+    } catch (error) {
+      throw new HttpException(
+        'Error creating user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get()
@@ -49,10 +58,10 @@ export class UserController {
     return this.userService.findUserById(id);
   }
 
-  @Put(':id')
+  @Put()
   @UseInterceptors(FileInterceptor('avatar'))
   async updateUser(
-    @Param('id') id: string,
+    @Query('id') id: string,
     @UploadedFile(
       new ParseFilePipe({
         validators: [new FileTypeValidator({ fileType: 'image/*' })],

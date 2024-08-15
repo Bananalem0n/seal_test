@@ -34,7 +34,7 @@ export class ProjectService {
   }
 
   async updateProject(
-    id: number,
+    id: string | number,
     name: string,
     description: string,
     status: ProjectStatus,

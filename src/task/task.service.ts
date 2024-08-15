@@ -15,14 +15,13 @@ export class TaskService {
     userId: number,
     projectId: number,
   ): Promise<Task> {
-    const task = new this.taskModel({
+    return await this.taskModel.create({
       title,
       description,
       status,
       userId,
       projectId,
     });
-    return task.save();
   }
 
   async findAllTasks(): Promise<Task[]> {

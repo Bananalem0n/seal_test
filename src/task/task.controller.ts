@@ -32,7 +32,6 @@ export class TaskController {
         projectId,
       );
       return {
-        message: `Task ${task.title} created successfully.`,
         task,
       };
     } catch (error) {
@@ -61,8 +60,8 @@ export class TaskController {
     }
   }
 
-  @Put(':id')
-  async updateTask(@Param('id') id: string, @Body() body: Task) {
+  @Put()
+  async updateTask(@Query('id') id: string, @Body() body: Task) {
     try {
       const { title, description, status, userId, projectId } = body;
       const task = await this.taskService.updateTask(

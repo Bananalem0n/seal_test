@@ -55,7 +55,6 @@ export class ProjectController {
       );
       return {
         message: `Project ${project.name} created successfully.`,
-        project,
       };
     } catch (error) {
       throw new HttpException(
@@ -66,9 +65,9 @@ export class ProjectController {
   }
 
   @Put()
-  async update(@Body() body: Project) {
+  async update(@Query('id') id: string, @Body() body: Project) {
     try {
-      const { id, name, description, status } = body;
+      const { name, description, status } = body;
       const updatedCount = await this.projectService.updateProject(
         id,
         name,
