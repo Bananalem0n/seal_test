@@ -3,7 +3,9 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -21,30 +23,84 @@ export class ProjectController {
 
   @Get()
   async findAll() {
-    return this.projectService.getAllProjects();
+    try {
+      return this.projectService.getAllProjects();
+    } catch (error) {
+      throw new HttpException(
+        'Error retrieving projects',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.projectService.getProjectById(id);
+    try {
+      return this.projectService.getProjectById(id);
+    } catch (error) {
+      throw new HttpException(
+        'Error retrieving project',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  @HttpCode(204)
   @Post()
   async create(@Body() body: Project) {
-    const { name, description } = body;
-    return this.projectService.createProject(name, description);
+    try {
+      const { name, description } = body;
+      const project = await this.projectService.createProject(
+        name,
+        description,
+      );
+      return {
+        message: `Project ${project.name} created successfully.`,
+        project,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Error creating project',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Put()
   async update(@Body() body: Project) {
-    const { id, name, description, status } = body;
-    return this.projectService.updateProject(id, name, description, status);
+    try {
+      const { id, name, description, status } = body;
+      const updatedCount = await this.projectService.updateProject(
+        id,
+        name,
+        description,
+        status,
+      );
+      if (updatedCount === 0) {
+        throw new NotFoundException('Project not found');
+      }
+      return {
+        message: `Project ${name} updated successfully.`,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Error updating project',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Delete()
   async delete(@Query('id') id: string) {
-    console.log(id);
-    return this.projectService.deleteProject(parseInt(id));
+    try {
+      await this.projectService.deleteProject(parseInt(id));
+      return {
+        message: `Project with id ${id} deleted successfully.`,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Error deleting project',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
