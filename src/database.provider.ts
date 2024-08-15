@@ -21,6 +21,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Task } from './models/task.model';
 import { Project } from './models/project.model';
 import { User } from './models/user.model';
+import { Admin } from './models/admin.model';
 
 export const databaseProviders = [
   {
@@ -34,7 +35,7 @@ export const databaseProviders = [
         password: process.env.DB_PASS ?? 'password',
         database: process.env.DB_NAME ?? '',
       });
-      sequelize.addModels([Task, Project, User]);
+      sequelize.addModels([Task, Project, User, Admin]);
       await sequelize.sync();
       return sequelize;
     },

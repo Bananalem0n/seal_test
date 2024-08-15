@@ -1,5 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Project, ProjectStatus } from 'src/models/project.model';
+import { Task } from 'src/models/task.model';
 
 @Injectable()
 export class ProjectService {
@@ -15,8 +16,17 @@ export class ProjectService {
     });
   }
 
-  async getProjectById(id: number): Promise<Project> {
-    return await this.projectModel.findByPk(id);
+  async getProjectById(id: string): Promise<Project> {
+    const project = await this.projectModel.findOne({
+      where: { id },
+      include: [Task],
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    return project;
   }
 
   async getAllProjects(): Promise<Project[]> {

@@ -7,29 +7,37 @@ import { TaskController } from './task/task.controller';
 import { ProjectController } from './project/project.controller';
 import { UserService } from './user/user.service';
 import { TaskService } from './task/task.service';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
 import { ProjectService } from './project/project.service';
 import { databaseProviders } from './database.provider';
 import { modelProvider } from './model.provider';
+import { LoginController } from './auth/auth.controller';
+import { AuthService } from './auth/auth.service';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [
+    ConfigModule.forRoot(),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET ?? 'secret',
+      signOptions: { expiresIn: '120m', issuer: process.env.JWT_ISSUER ?? '' },
+    }),
+  ],
   controllers: [
     AppController,
     UserController,
     TaskController,
     ProjectController,
-    AuthController,
+    LoginController,
   ],
   providers: [
     AppService,
     ProjectService,
     UserService,
     TaskService,
-    AuthService,
     ...databaseProviders,
     ...modelProvider,
+    AuthService,
   ],
   exports: [...databaseProviders],
 })

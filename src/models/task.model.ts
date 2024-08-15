@@ -1,26 +1,23 @@
-// src/task/task.model.ts
 import {
   Column,
-  DataType,
-  ForeignKey,
   Model,
   Table,
+  ForeignKey,
+  BelongsTo,
 } from 'sequelize-typescript';
-import { User } from './user.model';
-import { Project } from './project.model';
+import { User } from 'src/models/user.model';
+import { Project } from 'src/models/project.model';
 
-@Table
-export class Task extends Model<Task> {
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+@Table({ tableName: 'Tasks' })
+export class Task extends Model {
+  @Column
   title: string;
 
-  @Column({
-    type: DataType.TEXT,
-  })
+  @Column
   description: string;
+
+  @Column
+  status: string;
 
   @ForeignKey(() => User)
   @Column
@@ -29,4 +26,10 @@ export class Task extends Model<Task> {
   @ForeignKey(() => Project)
   @Column
   projectId: number;
+
+  @BelongsTo(() => User)
+  user: User;
+
+  @BelongsTo(() => Project)
+  project: Project;
 }

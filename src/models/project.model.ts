@@ -1,4 +1,5 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, DataType, Model, Table, HasMany } from 'sequelize-typescript';
+import { Task } from './task.model';
 
 export enum ProjectStatus {
   PENDING = 'pending',
@@ -26,4 +27,7 @@ export class Project extends Model<Project> {
     defaultValue: ProjectStatus.PENDING,
   })
   status: ProjectStatus;
+
+  @HasMany(() => Task) // Define the one-to-many relationship
+  tasks: Task[];
 }

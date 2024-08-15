@@ -8,10 +8,13 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { Project } from 'src/models/project.model';
 import { ProjectService } from './project.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('project')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
@@ -23,7 +26,7 @@ export class ProjectController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.projectService.getProjectById(parseInt(id));
+    return this.projectService.getProjectById(id);
   }
 
   @HttpCode(204)
