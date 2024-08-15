@@ -86,6 +86,16 @@ export class UserController {
 
   @Delete()
   async deleteUser(@Query('id') id: string) {
-    return this.userService.deleteUser(id);
+    try {
+      await this.userService.deleteUser(id);
+      return {
+        message: `User with id ${id} deleted successfully.`,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Error deleting User',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
