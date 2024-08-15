@@ -4,7 +4,7 @@ import * as fs from 'firebase-admin';
 
 export const admin = fs.initializeApp({
   credential: fs.credential.cert('serviceAccount.json'),
-  storageBucket: 'gs://seal-test-be154.appspot.com',
+  storageBucket: process.env.BUCKET_URL ?? '',
 });
 
 async function bootstrap() {

@@ -26,5 +26,5 @@ export class User extends Model<User> {
     type: DataType.TEXT,
     allowNull: true,
   })
-  avatar: string;
+  avatar?: string;
 }
